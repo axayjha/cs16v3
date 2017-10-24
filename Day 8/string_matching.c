@@ -11,6 +11,6 @@ int is_in(const char str[], const char substr[])
 
 int main()
 {
-	printf("%d\n", is_in("St. Thomas' College", "Tho"));
-	printf("%d\n", is_in("St. Thomas' College", "education"));
+	printf("%d\n", is_in("St. Thomas' College", "Tho")); //Found at position 4
+	printf("%d\n", is_in("St. Thomas' College", "education")); //Not found
 }
