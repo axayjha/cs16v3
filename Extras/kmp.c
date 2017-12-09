@@ -1,54 +1,56 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-int f[100];
-void kmp_failure(char* p){
-	int i = 1;
-	int j = 0;
-	int m = strlen(p);
-	f[0] = 0;
-	while(i<m){
-		if(p[j]==p[i]){
-			f[i] = j + 1;
-			i = i + 1;
-			j = j + 1;	
-		}else if(j>0){
-			j = f[j-1];
-		}else{
-			f[i] = 0;
-			i = i + 1;
-		}
-	}
+/*
+    Knuth-Morris-Pratt string matching algorithm
+    Akshay Anand
+    10/12/2017
+*/
+
+#include <stdio.h>
+#include <string.h>
+
+void kmp_matcher(const char string[], const char patter[]);
+void compute_prefix(const char patter[], int prefix[]);
+
+int main(int argc, char *argv[])
+{
+    char string[] = "hellofooworld";
+    char pattern[] = "oowo";
+    kmp_matcher(string, pattern);
+    return 0;
 }
-int main(){
-	char t[100],p[100];
-	printf("Enter the text\n");
-	scanf("%s",t);
-	printf("Enter the pattern to match\n");
-	scanf("%s",p);
-	int n = strlen(t);
-	int m = strlen(p);
-	int i = 0, j =0;
-	int flag = -1;
-	kmp_failure(p);
-	while(i<n){
-		if(p[j] == t[i]){
-			if(j==(m-1)){
-				printf("String match found at = %d\n", i-m+1);
-				flag = 0;
-				break;
-				}
-				i = i + 1;
-				j = j + 1;
-		}else if(j > 0){
-			j = f[j-1];
 
-		}else{
-			i = i + 1; 
+void kmp_matcher(const char string[], const char pattern[])
+{
+    int n = strlen(string), m = strlen(pattern);
+    int prefix[m];
+    compute_prefix(pattern, prefix);
+    int q=-1, found=0;
+    for(int i=0; i<n; i++)
+    {
+        while(q>0 && pattern[q+1]!=string[i])
+            q = prefix[q];                 /* backtrack if match streak broken*/
+        if(pattern[q+1] == string[i])
+            q++;                            /* increment counter when match found*/
+        if(q==m-1){     /*if whole pattern matched*/
+            printf("Found match at %d\n", i-m+1);
+            found=1;
+            q=prefix[q];    /* to continue on to find more instances*/
+        }
+    }
+    if(!(found)) printf("Not found\n");
+}
 
-			}
-	}
-	if(flag){
-		printf("Match not found\n");		
-	}
+void compute_prefix(const char pattern[], int prefix[])
+{
+    int m = strlen(pattern);
+    int k=-1;
+    prefix[0] = -1;
+    for(int q=1; q<m; q++)
+    {
+        while(k>0 && pattern[k+1]!=pattern[q])
+            k = prefix[k];          /* backtrack if match streak broken*/
+        if(pattern[k+1] == pattern[q])
+            k++;                /* increment counter when match found*/
+        prefix[q] = k;
+    }
+
 }
